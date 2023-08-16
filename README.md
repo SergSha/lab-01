@@ -524,3 +524,136 @@ Apply complete! Resources: 3 added, 0 changed, 0 destroyed.
 ```
 terraform destroy
 ```
+```
+yandex_vpc_network.vpc: Refreshing state... [id=enpp6f08k9jo6vum6qre]
+yandex_vpc_subnet.subnet: Refreshing state... [id=e2lml1vmag3fb7kuf2tg]
+yandex_compute_instance.instance: Refreshing state... [id=epdloutbt6i24ejhius7]
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following
+symbols:
+  - destroy
+
+Terraform will perform the following actions:
+
+  # yandex_compute_instance.instance will be destroyed
+  - resource "yandex_compute_instance" "instance" {
+      - created_at                = "2023-08-16T07:39:36Z" -> null
+      - folder_id                 = "b1g5h8d28qvg63eps3ms" -> null
+      - fqdn                      = "demo-vm.ru-central1.internal" -> null
+      - hostname                  = "demo-vm" -> null
+      - id                        = "epdloutbt6i24ejhius7" -> null
+      - labels                    = {} -> null
+      - metadata                  = {
+          - "ssh-keys" = <<-EOT
+                user:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDOhoQz97bl8n/F/QyM1OiqgrdA4ClCRVKBAZGDHtAF31UlrM+OQ6d33yhlDUMfMyzubeXGt0yeiRaPYEDPe41Pa3EkDd8S2tRtgMfu2iSO6QeYiwQRhPmbJQNLDfLD0GI0UOVw76KjxxA6iTNon5wvgeZfEzcNHP/OluYrtdPYuYmSrSMSO9xaXyWvkZgwDsNQPJYf2PhxPgCkVwNyBA64NVEKsUqpC6RWpxC2GTknq8cgBp5/lJr+Z7b6bTnP39tUSd4ansaXGJ960B+lS/AuZA7TpGFaq1NWycPBBt24DAGvWMWcTfEuByT+uXLHYd7J018lfSL2HL9TE3wEmnFEnkpTxqU9Jih4ToYcE6533fy2+TjIsGwszUb/x4TVRgrUFmtjRyYYc3rKFQrh9dncQBm6cAbB35bTtBysnYAspDQdGtcD4ULOBn30bWPxV1wj8lXjTxrG3K3qEK5TVPB01ITdnp9Kd7gaouMg44t6sOIlKybBUtn88/D1hhtiWRTXdZX3qheHvubrF76AkAJ0VolIidGTX0++TrR5qqjEkrsSAa4nNVmr47NZjDYRxW/twCK71eRm+cYwYDnnAXVf4pmjANebCrQ+zEvu/dPil0XVCUPHXY2I2O/mjmpDJkz16f6dlbY1jo/Vhh69IMOJ0KsWBQwsv6oMHZNKYHmNiQ== user@redos.localdomain
+            EOT
+        } -> null
+      - name                      = "demo-vm" -> null
+      - network_acceleration_type = "standard" -> null
+      - platform_id               = "standard-v3" -> null
+      - status                    = "running" -> null
+      - zone                      = "ru-central1-b" -> null
+
+      - boot_disk {
+          - auto_delete = true -> null
+          - device_name = "epdo55q9q60sq8hh2d9s" -> null
+          - disk_id     = "epdo55q9q60sq8hh2d9s" -> null
+          - mode        = "READ_WRITE" -> null
+
+          - initialize_params {
+              - block_size = 4096 -> null
+              - image_id   = "fd83u9thmahrv9lgedrk" -> null
+              - size       = 10 -> null
+              - type       = "network-ssd" -> null
+            }
+        }
+
+      - metadata_options {
+          - aws_v1_http_endpoint = 1 -> null
+          - aws_v1_http_token    = 2 -> null
+          - gce_http_endpoint    = 1 -> null
+          - gce_http_token       = 1 -> null
+        }
+
+      - network_interface {
+          - index              = 0 -> null
+          - ip_address         = "10.10.10.20" -> null
+          - ipv4               = true -> null
+          - ipv6               = false -> null
+          - mac_address        = "d0:0d:15:c7:ba:be" -> null
+          - nat                = true -> null
+          - nat_ip_address     = "158.160.71.173" -> null
+          - nat_ip_version     = "IPV4" -> null
+          - security_group_ids = [] -> null
+          - subnet_id          = "e2lml1vmag3fb7kuf2tg" -> null
+        }
+
+      - placement_policy {
+          - host_affinity_rules = [] -> null
+        }
+
+      - resources {
+          - core_fraction = 100 -> null
+          - cores         = 2 -> null
+          - gpus          = 0 -> null
+          - memory        = 4 -> null
+        }
+
+      - scheduling_policy {
+          - preemptible = false -> null
+        }
+    }
+
+  # yandex_vpc_network.vpc will be destroyed
+  - resource "yandex_vpc_network" "vpc" {
+      - created_at = "2023-08-16T07:39:31Z" -> null
+      - folder_id  = "b1g5h8d28qvg63eps3ms" -> null
+      - id         = "enpp6f08k9jo6vum6qre" -> null
+      - labels     = {} -> null
+      - name       = "demo_vpc" -> null
+      - subnet_ids = [
+          - "e2lml1vmag3fb7kuf2tg",
+        ] -> null
+    }
+
+  # yandex_vpc_subnet.subnet will be destroyed
+  - resource "yandex_vpc_subnet" "subnet" {
+      - created_at     = "2023-08-16T07:39:32Z" -> null
+      - folder_id      = "b1g5h8d28qvg63eps3ms" -> null
+      - id             = "e2lml1vmag3fb7kuf2tg" -> null
+      - labels         = {} -> null
+      - name           = "demo_subnet" -> null
+      - network_id     = "enpp6f08k9jo6vum6qre" -> null
+      - v4_cidr_blocks = [
+          - "10.10.10.0/24",
+        ] -> null
+      - v6_cidr_blocks = [] -> null
+      - zone           = "ru-central1-b" -> null
+    }
+
+Plan: 0 to add, 0 to change, 3 to destroy.
+
+Do you really want to destroy all resources?
+  Terraform will destroy all your managed infrastructure, as shown above.
+  There is no undo. Only 'yes' will be accepted to confirm.
+
+  Enter a value: 
+```
+Видим план удаления созданных ресурсов. Набираем 'yes' и нажимаем enter:
+```
+  Enter a value: yes
+
+yandex_compute_instance.instance: Destroying... [id=epdloutbt6i24ejhius7]
+yandex_compute_instance.instance: Still destroying... [id=epdloutbt6i24ejhius7, 10s elapsed]
+yandex_compute_instance.instance: Still destroying... [id=epdloutbt6i24ejhius7, 20s elapsed]
+yandex_compute_instance.instance: Destruction complete after 27s
+yandex_vpc_subnet.subnet: Destroying... [id=e2lml1vmag3fb7kuf2tg]
+yandex_vpc_subnet.subnet: Destruction complete after 4s
+yandex_vpc_network.vpc: Destroying... [id=enpp6f08k9jo6vum6qre]
+yandex_vpc_network.vpc: Destruction complete after 2s
+
+Destroy complete! Resources: 3 destroyed.
+```
+Как видим, удалились все три ресурса.
+
+Добавим provision ansible для автоматической установки в ВМ сервиса nginx.
