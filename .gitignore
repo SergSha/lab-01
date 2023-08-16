@@ -1,5 +1,6 @@
 .env
 .terraform
 .terragrunt-cache
+.terraform.lock.hcl
 *.tfstate
 .DS_Store
