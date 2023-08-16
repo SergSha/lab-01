@@ -1,5 +1,6 @@
 locals {
-  ssh_key = "user:${file("~/.ssh/id_rsa.pub")}"
+  ssh_public_key = "user:${file("~/.ssh/otus.pub")}"
+  ssh_private_key = "~/.ssh/otus"
 }
 
 resource "yandex_vpc_network" "vpc" {
@@ -43,6 +44,22 @@ resource "yandex_compute_instance" "instance" {
   }
 
   metadata = {
-    ssh-keys           = local.ssh_key
+    ssh-keys           = local.ssh_public_key
+  }
+
+  provisioner "remote-exec" {
+    inline = ["sudo apt -y install nginx"]
+
+    connection {
+      host        = self.public_ip
+      type        = "ssh"
+      user        = "user"
+      private_key = "${file(local.ssh_private_key)}"
+    }
+  }
+
+  provisioner "local-exec" {
+  #  command = "ansible-playbook -u user -i '${self.public_ip},' --private-key ${local.ssh_private_key} provision.yml" 
+    command = "echo 'My Finish'"
   }
 }

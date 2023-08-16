@@ -91,8 +91,8 @@ variable "disk_type" {
   default     = "network-ssd"
 }
 
-variable "ssh_key" {
+variable "ssh_public_key" {
   type        = string
-  description = "cloud-config ssh key"
+  description = "cloud-config ssh public key"
   default = ""
 }
