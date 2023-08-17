@@ -1,9 +1,9 @@
 locals {
-#  user            = "user"
-#  ssh_public_key  = "~/.ssh/id_rsa.pub"
+  user            = "debian"
+#  ssh_public_key  = "~/.ssh/otus.pub"
 # ssh_key  = "user:${file("~/.ssh/id_rsa.pub")}"
-  ssh_key  = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
-#  ssh_private_key = "~/.ssh/otus"
+  ssh_public_key  = "~/.ssh/otus.pub"
+  ssh_private_key = "~/.ssh/otus"
 }
 
 resource "yandex_vpc_network" "vpc" {
@@ -47,23 +47,21 @@ resource "yandex_compute_instance" "instance" {
   }
 
   metadata = {
-    #ssh-keys           = "${local.user}:${file(local.ssh_public_key)}"
-    ssh-keys           = local.ssh_key
+    ssh-keys           = "${local.user}:${file(local.ssh_public_key)}"
   }
 
-  #provisioner "remote-exec" {
-  #  inline = ["sudo apt -y install nginx && sudo systemctl start nginx"]
+  provisioner "remote-exec" {
+    inline = ["echo 'Wait until SSH is ready'"]
 
-  #  connection {
-  #    host        = yandex_compute_instance.instance.network_interface.0.nat_ip_address
-  #    type        = "ssh"
-  #    user        = local.user
-  #    private_key = file(local.ssh_private_key)
-  #  }
-  #}
+    connection {
+      host        = yandex_compute_instance.instance.network_interface.0.nat_ip_address
+      type        = "ssh"
+      user        = local.user
+      private_key = file(local.ssh_private_key)
+    }
+  }
 
-  #provisioner "local-exec" {
-  ##  command = "ansible-playbook -u user -i '${self.public_ip},' --private-key ${local.ssh_private_key} provision.yml" 
-  #  command = "echo 'My Finish'"
-  #}
+  provisioner "local-exec" {
+    command = "ansible-playbook -u user -i '${yandex_compute_instance.instance.network_interface.0.nat_ip_address},' --private-key ${local.ssh_private_key} provision.yml"
+  }
 }

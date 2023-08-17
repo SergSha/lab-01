@@ -656,4 +656,350 @@ Destroy complete! Resources: 3 destroyed.
 ```
 Как видим, удалились все три ресурса.
 
+#### Добавление и запуск provision Ansible 
+
 Добавим provision ansible для автоматической установки в ВМ сервиса nginx.
+
+В файл main.tf добавим следующие блоки:
+```
+...
+  provisioner "remote-exec" {
+    inline = ["echo 'Wait until SSH is ready'"]
+
+    connection {
+      host        = yandex_compute_instance.instance.network_interface.0.nat_ip_address
+      type        = "ssh"
+      user        = local.user
+      private_key = file(local.ssh_private_key)
+    }
+  }
+
+  provisioner "local-exec" {
+    command = "ansible-playbook -u user -i '${yandex_compute_instance.instance.network_interface.0.nat_ip_address},' --private-key ${local.ssh_private_key} provision.yml"
+  }
+```
+Создадим playbook файл provision.yml:
+```
+---
+- name: Install Nginx
+  hosts: all
+  remote_user: debian
+  become: true
+  serial: 5
+
+  roles:
+    - chrony
+    - nftables
+    - nginx
+```
+
+Создадим директорий roles, поддиректории chrony, nftables, nginx, и в каждом поддиректории директорий tasks:
+```
+mkdir -p ./roles/{chrony,nftables,nginx}/tasks
+```
+Для роли nginx создадим playbook файл ./roles/nginx/tasks/main.yml:
+```
+---
+- name: Debian OS
+  block:
+
+  # apt install nginx -y
+  - name: Ensure Nginx is at the latest version
+    ansible.builtin.apt:
+      name:
+        - nginx
+      state: latest
+      update_cache: yes
+
+  # systemctl enable nginx --now
+  - name: Start Nginx Service
+    ansible.builtin.systemd:
+      name: nginx
+      state: started
+      enabled: yes
+
+  when: ansible_os_family == "Debian"
+
+- name: Redhat OS
+  block:
+
+  # dnf install chrony -y
+  - name: Ensure Nginx is at the latest version
+    ansible.builtin.yum:
+      name:
+        - nginx
+      state: latest
+      enabled: yes
+
+  # systemctl enable nginx --now
+  - name: Start Nginx Service
+    ansible.builtin.systemd:
+      name: nginx
+      state: started
+      enabled: yes
+
+  when: ansible_os_family == "RedHat"
+```
+Создадим ansible конфиг файл ansible.cfg:
+```
+[defaults]
+host_key_checking = False
+```
+Создадим terraform файл outputs.tf для получения публичного ip адреса:
+```
+output "external_ip_address_demo_vm" {
+  value = yandex_compute_instance.instance.network_interface.0.nat_ip_address
+}
+```
+
+Теперь можем запустить команду terraform apply:
+```
+echo yes | terraform apply
+```
+```
+Terraform used the selected providers to generate the following execution plan.
+Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # yandex_compute_instance.instance will be created
+  + resource "yandex_compute_instance" "instance" {
+      + created_at                = (known after apply)
+      + folder_id                 = (known after apply)
+      + fqdn                      = (known after apply)
+      + gpu_cluster_id            = (known after apply)
+      + hostname                  = "demo-vm"
+      + id                        = (known after apply)
+      + metadata                  = {
+          + "ssh-keys" = <<-EOT
+                debian:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDrdlH0ea3b36j6wQDG/1QAraFH/NzjYBsw4WHG3dWUdk6sLwAc7lkf3VG2KfEzUo7FsFUwvYTQ2Q1vvAc9uxULwYbgu31bCBlfcUt/FGfBvQrUPZTkjHoe3zRNNHhEHGC+6a0hte2LT6C68vnvFxl9UJQeU1AkwidYdGQG6Uw694fMt7PkAVX/IR85wlbMJ8WQxc3VPI2helAvavzod9MhnB8l9yWKwmZAO+ZFOMsYOJX3ydGZOFqheJUiKlvhw1qFzGrs0zKr2BImc5q2gOyNor+upQ7Rg9G3u2CyjeYlt77TopCORT2kaAjTgSmnzgvhiiMW8uqjYwy/wd6Pxjvz user@centos7
+            EOT
+        }
+      + name                      = "demo-vm"
+      + network_acceleration_type = "standard"
+      + platform_id               = "standard-v3"
+      + service_account_id        = (known after apply)
+      + status                    = (known after apply)
+      + zone                      = "ru-central1-b"
+
+      + boot_disk {
+          + auto_delete = true
+          + device_name = (known after apply)
+          + disk_id     = (known after apply)
+          + mode        = (known after apply)
+
+          + initialize_params {
+              + block_size  = (known after apply)
+              + description = (known after apply)
+              + image_id    = "fd83u9thmahrv9lgedrk"
+              + name        = (known after apply)
+              + size        = 10
+              + snapshot_id = (known after apply)
+              + type        = "network-ssd"
+            }
+        }
+
+      + network_interface {
+          + index              = (known after apply)
+          + ip_address         = (known after apply)
+          + ipv4               = true
+          + ipv6               = (known after apply)
+          + ipv6_address       = (known after apply)
+          + mac_address        = (known after apply)
+          + nat                = true
+          + nat_ip_address     = (known after apply)
+          + nat_ip_version     = (known after apply)
+          + security_group_ids = (known after apply)
+          + subnet_id          = (known after apply)
+        }
+
+      + resources {
+          + core_fraction = 100
+          + cores         = 2
+          + memory        = 4
+        }
+    }
+
+  # yandex_vpc_network.vpc will be created
+  + resource "yandex_vpc_network" "vpc" {
+      + created_at                = (known after apply)
+      + default_security_group_id = (known after apply)
+      + folder_id                 = (known after apply)
+      + id                        = (known after apply)
+      + labels                    = (known after apply)
+      + name                      = "demo_vpc"
+      + subnet_ids                = (known after apply)
+    }
+
+  # yandex_vpc_subnet.subnet will be created
+  + resource "yandex_vpc_subnet" "subnet" {
+      + created_at     = (known after apply)
+      + folder_id      = (known after apply)
+      + id             = (known after apply)
+      + labels         = (known after apply)
+      + name           = "demo_subnet"
+      + network_id     = (known after apply)
+      + v4_cidr_blocks = [
+          + "10.10.10.0/24",
+        ]
+      + v6_cidr_blocks = (known after apply)
+      + zone           = "ru-central1-b"
+    }
+
+Plan: 3 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + external_ip_address_demo_vm = (known after apply)
+
+Do you want to perform these actions?
+  Terraform will perform the actions described above.
+  Only 'yes' will be accepted to approve.
+
+  Enter a value: 
+yandex_vpc_network.vpc: Creating...
+yandex_vpc_network.vpc: Creation complete after 2s [id=enpijm7u76hpph461bnl]
+yandex_vpc_subnet.subnet: Creating...
+yandex_vpc_subnet.subnet: Creation complete after 0s [id=e2lbafqkg420326o5gig]
+yandex_compute_instance.instance: Creating...
+yandex_compute_instance.instance: Still creating... [10s elapsed]
+yandex_compute_instance.instance: Still creating... [20s elapsed]
+yandex_compute_instance.instance: Still creating... [30s elapsed]
+yandex_compute_instance.instance: Provisioning with 'remote-exec'...
+yandex_compute_instance.instance (remote-exec): Connecting to remote host via SSH...
+yandex_compute_instance.instance (remote-exec):   Host: 84.201.179.210
+yandex_compute_instance.instance (remote-exec):   User: debian
+yandex_compute_instance.instance (remote-exec):   Password: false
+yandex_compute_instance.instance (remote-exec):   Private key: true
+yandex_compute_instance.instance (remote-exec):   Certificate: false
+yandex_compute_instance.instance (remote-exec):   SSH Agent: true
+yandex_compute_instance.instance (remote-exec):   Checking Host Key: false
+yandex_compute_instance.instance (remote-exec):   Target Platform: unix
+yandex_compute_instance.instance: Still creating... [40s elapsed]
+yandex_compute_instance.instance: Still creating... [50s elapsed]
+yandex_compute_instance.instance (remote-exec): Connecting to remote host via SSH...
+yandex_compute_instance.instance (remote-exec):   Host: 84.201.179.210
+yandex_compute_instance.instance (remote-exec):   User: debian
+yandex_compute_instance.instance (remote-exec):   Password: false
+yandex_compute_instance.instance (remote-exec):   Private key: true
+yandex_compute_instance.instance (remote-exec):   Certificate: false
+yandex_compute_instance.instance (remote-exec):   SSH Agent: true
+yandex_compute_instance.instance (remote-exec):   Checking Host Key: false
+yandex_compute_instance.instance (remote-exec):   Target Platform: unix
+yandex_compute_instance.instance (remote-exec): Connected!
+yandex_compute_instance.instance (remote-exec): Reading package lists... 0%
+yandex_compute_instance.instance (remote-exec): Reading package lists... 0%
+yandex_compute_instance.instance (remote-exec): Reading package lists... 2%
+yandex_compute_instance.instance (remote-exec): Reading package lists... 51%
+yandex_compute_instance.instance (remote-exec): Reading package lists... 51%
+yandex_compute_instance.instance (remote-exec): Reading package lists... 89%
+yandex_compute_instance.instance (remote-exec): Reading package lists... 89%
+yandex_compute_instance.instance (remote-exec): Reading package lists... Done
+yandex_compute_instance.instance (remote-exec): Building dependency tree... 0%
+yandex_compute_instance.instance (remote-exec): Building dependency tree... 0%
+yandex_compute_instance.instance (remote-exec): Building dependency tree... 50%
+yandex_compute_instance.instance (remote-exec): Building dependency tree... 50%
+yandex_compute_instance.instance (remote-exec): Building dependency tree... Done
+yandex_compute_instance.instance (remote-exec): Reading state information... 0%
+yandex_compute_instance.instance (remote-exec): Reading state information... 0%
+yandex_compute_instance.instance (remote-exec): Reading state information... Done
+yandex_compute_instance.instance (remote-exec): The following additional packages will be installed:
+yandex_compute_instance.instance (remote-exec):   libnginx-mod-http-echo nginx-common
+yandex_compute_instance.instance (remote-exec):   nginx-light
+yandex_compute_instance.instance (remote-exec): Suggested packages:
+yandex_compute_instance.instance (remote-exec):   fcgiwrap nginx-doc ssl-cert
+yandex_compute_instance.instance (remote-exec): The following NEW packages will be installed:
+yandex_compute_instance.instance (remote-exec):   libnginx-mod-http-echo nginx
+yandex_compute_instance.instance (remote-exec):   nginx-common nginx-light
+yandex_compute_instance.instance (remote-exec): 0 upgraded, 4 newly installed, 0 to remove and 1 not upgraded.
+yandex_compute_instance.instance (remote-exec): Need to get 820 kB of archives.
+yandex_compute_instance.instance (remote-exec): After this operation, 1,848 kB of additional disk space will be used.
+yandex_compute_instance.instance (remote-exec): 
+yandex_compute_instance.instance (remote-exec): 0% [Working]
+yandex_compute_instance.instance (remote-exec): Get:1 http://security.debian.org bullseye-security/main amd64 nginx-common all 1.18.0-6.1+deb11u3 [126 kB]
+yandex_compute_instance.instance (remote-exec): 
+yandex_compute_instance.instance (remote-exec): 1% [1 nginx-common 14.2 kB/126 kB 11%]
+yandex_compute_instance.instance (remote-exec): 17% [Working]
+yandex_compute_instance.instance (remote-exec): Get:2 http://security.debian.org bullseye-security/main amd64 libnginx-mod-http-echo amd64 1.18.0-6.1+deb11u3 [109 kB]
+yandex_compute_instance.instance (remote-exec): 
+yandex_compute_instance.instance (remote-exec): 17% [2 libnginx-mod-http-echo 0 B/109 k
+yandex_compute_instance.instance (remote-exec): 33% [Working]
+yandex_compute_instance.instance (remote-exec): Get:3 http://security.debian.org bullseye-security/main amd64 nginx-light amd64 1.18.0-6.1+deb11u3 [492 kB]
+yandex_compute_instance.instance (remote-exec): 
+yandex_compute_instance.instance (remote-exec): 33% [3 nginx-light 0 B/492 kB 0%]
+yandex_compute_instance.instance (remote-exec): 86% [Waiting for headers]
+yandex_compute_instance.instance (remote-exec): Get:4 http://security.debian.org bullseye-security/main amd64 nginx all 1.18.0-6.1+deb11u3 [92.9 kB]
+yandex_compute_instance.instance (remote-exec): 
+yandex_compute_instance.instance (remote-exec): 86% [4 nginx 1,773 B/92.9 kB 2%]
+yandex_compute_instance.instance (remote-exec): 100% [Working]
+yandex_compute_instance.instance (remote-exec): Fetched 820 kB in 0s (3,080 kB/s)
+yandex_compute_instance.instance (remote-exec): Preconfiguring packages ...
+                                                Selecting previously unselected package nginx-common.ce.instance (remote-exec): 
+yandex_compute_instance.instance (remote-exec): (Reading database ...
+yandex_compute_instance.instance (remote-exec): (Reading database ... 5%
+yandex_compute_instance.instance (remote-exec): (Reading database ... 10%
+yandex_compute_instance.instance (remote-exec): (Reading database ... 15%
+yandex_compute_instance.instance (remote-exec): (Reading database ... 20%
+yandex_compute_instance.instance (remote-exec): (Reading database ... 25%
+yandex_compute_instance.instance (remote-exec): (Reading database ... 30%
+yandex_compute_instance.instance (remote-exec): (Reading database ... 35%
+yandex_compute_instance.instance (remote-exec): (Reading database ... 40%
+yandex_compute_instance.instance (remote-exec): (Reading database ... 45%
+yandex_compute_instance.instance (remote-exec): (Reading database ... 50%
+yandex_compute_instance.instance (remote-exec): (Reading database ... 55%
+yandex_compute_instance.instance (remote-exec): (Reading database ... 60%
+yandex_compute_instance.instance (remote-exec): (Reading database ... 65%
+yandex_compute_instance.instance (remote-exec): (Reading database ... 70%
+yandex_compute_instance.instance (remote-exec): (Reading database ... 75%
+yandex_compute_instance.instance (remote-exec): (Reading database ... 80%
+yandex_compute_instance.instance (remote-exec): (Reading database ... 85%
+yandex_compute_instance.instance (remote-exec): (Reading database ... 90%
+yandex_compute_instance.instance (remote-exec): (Reading database ... 95%
+yandex_compute_instance.instance (remote-exec): (Reading database ... 100%
+yandex_compute_instance.instance (remote-exec): (Reading database ... 34362 files and directories currently installed.)
+yandex_compute_instance.instance (remote-exec): Preparing to unpack .../nginx-common_1.18.0-6.1+deb11u3_all.deb ...
+Progress: [  6%] [#.................] te-exec): 
+yandex_compute_instance.instance (remote-exec): Unpacking nginx-common (1.18.0-6.1+deb11u3) ...
+Progress: [ 12%] [##................] te-exec): Selecting previously unselected package libnginx-mod-http-echo.
+yandex_compute_instance.instance (remote-exec): Preparing to unpack .../libnginx-mod-http-echo_1.18.0-6.1+deb11u3_amd64.deb ...
+Progress: [ 18%] [###...............] te-exec): Unpacking libnginx-mod-http-echo (1.18.0-6.1+deb11u3) ...
+Progress: [ 24%] [####..............] te-exec): Selecting previously unselected package nginx-light.
+yandex_compute_instance.instance (remote-exec): Preparing to unpack .../nginx-light_1.18.0-6.1+deb11u3_amd64.deb ...
+Progress: [ 29%] [#####.............] te-exec): Unpacking nginx-light (1.18.0-6.1+deb11u3) ...
+Progress: [ 35%] [######............] te-exec): Selecting previously unselected package nginx.
+yandex_compute_instance.instance (remote-exec): Preparing to unpack .../nginx_1.18.0-6.1+deb11u3_all.deb ...
+Progress: [ 41%] [#######...........] te-exec): Unpacking nginx (1.18.0-6.1+deb11u3) ...
+Progress: [ 47%] [########..........] te-exec): Setting up nginx-common (1.18.0-6.1+deb11u3) ...
+Progress: [ 53%] [#########.........] te-exec): 
+yandex_compute_instance.instance (remote-exec): Created symlink /etc/systemd/system/multi-user.target.wants/nginx.service → /lib/systemd/system/nginx.service.
+Progress: [ 59%] [##########........] te-exec): Setting up libnginx-mod-http-echo (1.18.0-6.1+deb11u3) ...
+Progress: [ 71%] [############......] te-exec): Setting up nginx-light (1.18.0-6.1+deb11u3) ...
+Progress: [ 76%] [#############.....] te-exec): Upgrading binary: nginx
+yandex_compute_instance.instance (remote-exec): .
+Progress: [ 82%] [##############....] te-exec): Setting up nginx (1.18.0-6.1+deb11u3) ...
+Progress: [ 94%] [################..] te-exec): 
+yandex_compute_instance.instance: Creation complete after 58s [id=epd22cctldt23d1vo08a]
+
+Apply complete! Resources: 3 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+external_ip_address_demo_vm = "84.201.179.210"
+```
+Из последней строки вывода мы получили ip адрес виртуальной машины, на которой должно было быть установлен nginx. 
+Вставим полученный ip адрес в строку браузера, чтобы проверить работу nginx:
+
+<img src="screens/screen-002.png" alt="screen-002.png" />
+
+Как видим, nginx корректно установился и работает.
+
+### Запуск стенда
+
+Для того чтобы скачать и запустить стенд, нужно выполнить следующую команду:
+```
+git clone https://github.com/SergSha/lab-01.git && \
+cd ./lab-01/ && \
+terraform init && \
+echo yes | terraform apply
+
+```

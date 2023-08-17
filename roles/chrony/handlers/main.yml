@@ -1,0 +1,12 @@
+---
+# systemctl restart chrony
+- name: Restart Chrony Debian
+  ansible.builtin.service:
+    name: chrony
+    state: restarted
+
+# systemctl restart chronyd
+- name: Restart Chrony RedHat
+  ansible.builtin.service:
+    name: chronyd
+    state: restarted
