@@ -987,11 +987,15 @@ external_ip_address_demo_vm = "84.201.179.210"
 
 ### Запуск стенда
 
-Для того чтобы скачать и запустить стенд, нужно выполнить следующую команду:
+Для того чтобы скачать, развернуть и запустить стенд, нужно выполнить следующую команду:
 ```
 git clone https://github.com/SergSha/lab-01.git && \
 cd ./lab-01/ && \
 terraform init && \
 echo yes | terraform apply
+```
 
+Удалить развернутый стенд командой:
+```
+echo yes | terraform destroy
 ```

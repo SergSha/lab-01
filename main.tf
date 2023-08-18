@@ -1,7 +1,7 @@
 locals {
   user            = "debian"
-  ssh_public_key  = "~/.ssh/otus.pub"
-  ssh_private_key = "~/.ssh/otus"
+  ssh_public_key  = "~/.ssh/id_rsa.pub"
+  ssh_private_key = "~/.ssh/id_rsa"
 }
 
 resource "yandex_vpc_network" "vpc" {
