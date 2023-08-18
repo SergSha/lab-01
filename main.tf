@@ -1,7 +1,7 @@
 locals {
   user            = "debian"
-  ssh_public_key  = "~/.ssh/id_rsa.pub"
-  ssh_private_key = "~/.ssh/id_rsa"
+  ssh_public_key  = "~/.ssh/otus.pub"
+  ssh_private_key = "~/.ssh/otus"
 }
 
 resource "yandex_vpc_network" "vpc" {
@@ -60,6 +60,6 @@ resource "yandex_compute_instance" "instance" {
   }
 
   provisioner "local-exec" {
-    command = "ansible-playbook -u user -i '${yandex_compute_instance.instance.network_interface.0.nat_ip_address},' --private-key ${local.ssh_private_key} provision.yml"
+    command = "ansible-playbook -u '${local.user}' --private-key ${local.ssh_private_key} --become -i '${yandex_compute_instance.instance.network_interface.0.nat_ip_address},' provision.yml"
   }
 }

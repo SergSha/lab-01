@@ -155,7 +155,7 @@ variable "ssh_key" {
 main.tf:
 ```
 locals {
-  ssh_key = "user:${file("~/.ssh/id_rsa.pub")}"
+  ssh_key = "debian:${file("~/.ssh/id_rsa.pub")}"
 }
 
 resource "yandex_vpc_network" "vpc" {
@@ -283,7 +283,7 @@ Terraform will perform the following actions:
       + id                        = (known after apply)
       + metadata                  = {
           + "ssh-keys" = <<-EOT
-                user:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDOhoQz97bl8n/F/QyM1OiqgrdA4ClCRVKBAZGDHtAF31UlrM+OQ6d33yhlDUMfMyzubeXGt0yeiRaPYEDPe41Pa3EkDd8S2tRtgMfu2iSO6QeYiwQRhPmbJQNLDfLD0GI0UOVw76KjxxA6iTNon5wvgeZfEzcNHP/OluYrtdPYuYmSrSMSO9xaXyWvkZgwDsNQPJYf2PhxPgCkVwNyBA64NVEKsUqpC6RWpxC2GTknq8cgBp5/lJr+Z7b6bTnP39tUSd4ansaXGJ960B+lS/AuZA7TpGFaq1NWycPBBt24DAGvWMWcTfEuByT+uXLHYd7J018lfSL2HL9TE3wEmnFEnkpTxqU9Jih4ToYcE6533fy2+TjIsGwszUb/x4TVRgrUFmtjRyYYc3rKFQrh9dncQBm6cAbB35bTtBysnYAspDQdGtcD4ULOBn30bWPxV1wj8lXjTxrG3K3qEK5TVPB01ITdnp9Kd7gaouMg44t6sOIlKybBUtn88/D1hhtiWRTXdZX3qheHvubrF76AkAJ0VolIidGTX0++TrR5qqjEkrsSAa4nNVmr47NZjDYRxW/twCK71eRm+cYwYDnnAXVf4pmjANebCrQ+zEvu/dPil0XVCUPHXY2I2O/mjmpDJkz16f6dlbY1jo/Vhh69IMOJ0KsWBQwsv6oMHZNKYHmNiQ== user@redos.localdomain
+                debian:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDOhoQz97bl8n/F/QyM1OiqgrdA4ClCRVKBAZGDHtAF31UlrM+OQ6d33yhlDUMfMyzubeXGt0yeiRaPYEDPe41Pa3EkDd8S2tRtgMfu2iSO6QeYiwQRhPmbJQNLDfLD0GI0UOVw76KjxxA6iTNon5wvgeZfEzcNHP/OluYrtdPYuYmSrSMSO9xaXyWvkZgwDsNQPJYf2PhxPgCkVwNyBA64NVEKsUqpC6RWpxC2GTknq8cgBp5/lJr+Z7b6bTnP39tUSd4ansaXGJ960B+lS/AuZA7TpGFaq1NWycPBBt24DAGvWMWcTfEuByT+uXLHYd7J018lfSL2HL9TE3wEmnFEnkpTxqU9Jih4ToYcE6533fy2+TjIsGwszUb/x4TVRgrUFmtjRyYYc3rKFQrh9dncQBm6cAbB35bTtBysnYAspDQdGtcD4ULOBn30bWPxV1wj8lXjTxrG3K3qEK5TVPB01ITdnp9Kd7gaouMg44t6sOIlKybBUtn88/D1hhtiWRTXdZX3qheHvubrF76AkAJ0VolIidGTX0++TrR5qqjEkrsSAa4nNVmr47NZjDYRxW/twCK71eRm+cYwYDnnAXVf4pmjANebCrQ+zEvu/dPil0XVCUPHXY2I2O/mjmpDJkz16f6dlbY1jo/Vhh69IMOJ0KsWBQwsv6oMHZNKYHmNiQ== user@redos.localdomain
             EOT
         }
       + name                      = "demo-vm"
@@ -401,7 +401,7 @@ Terraform will perform the following actions:
       + id                        = (known after apply)
       + metadata                  = {
           + "ssh-keys" = <<-EOT
-                user:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDOhoQz97bl8n/F/QyM1OiqgrdA4ClCRVKBAZGDHtAF31UlrM+OQ6d33yhlDUMfMyzubeXGt0yeiRaPYEDPe41Pa3EkDd8S2tRtgMfu2iSO6QeYiwQRhPmbJQNLDfLD0GI0UOVw76KjxxA6iTNon5wvgeZfEzcNHP/OluYrtdPYuYmSrSMSO9xaXyWvkZgwDsNQPJYf2PhxPgCkVwNyBA64NVEKsUqpC6RWpxC2GTknq8cgBp5/lJr+Z7b6bTnP39tUSd4ansaXGJ960B+lS/AuZA7TpGFaq1NWycPBBt24DAGvWMWcTfEuByT+uXLHYd7J018lfSL2HL9TE3wEmnFEnkpTxqU9Jih4ToYcE6533fy2+TjIsGwszUb/x4TVRgrUFmtjRyYYc3rKFQrh9dncQBm6cAbB35bTtBysnYAspDQdGtcD4ULOBn30bWPxV1wj8lXjTxrG3K3qEK5TVPB01ITdnp9Kd7gaouMg44t6sOIlKybBUtn88/D1hhtiWRTXdZX3qheHvubrF76AkAJ0VolIidGTX0++TrR5qqjEkrsSAa4nNVmr47NZjDYRxW/twCK71eRm+cYwYDnnAXVf4pmjANebCrQ+zEvu/dPil0XVCUPHXY2I2O/mjmpDJkz16f6dlbY1jo/Vhh69IMOJ0KsWBQwsv6oMHZNKYHmNiQ== user@redos.localdomain
+                debian:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDOhoQz97bl8n/F/QyM1OiqgrdA4ClCRVKBAZGDHtAF31UlrM+OQ6d33yhlDUMfMyzubeXGt0yeiRaPYEDPe41Pa3EkDd8S2tRtgMfu2iSO6QeYiwQRhPmbJQNLDfLD0GI0UOVw76KjxxA6iTNon5wvgeZfEzcNHP/OluYrtdPYuYmSrSMSO9xaXyWvkZgwDsNQPJYf2PhxPgCkVwNyBA64NVEKsUqpC6RWpxC2GTknq8cgBp5/lJr+Z7b6bTnP39tUSd4ansaXGJ960B+lS/AuZA7TpGFaq1NWycPBBt24DAGvWMWcTfEuByT+uXLHYd7J018lfSL2HL9TE3wEmnFEnkpTxqU9Jih4ToYcE6533fy2+TjIsGwszUb/x4TVRgrUFmtjRyYYc3rKFQrh9dncQBm6cAbB35bTtBysnYAspDQdGtcD4ULOBn30bWPxV1wj8lXjTxrG3K3qEK5TVPB01ITdnp9Kd7gaouMg44t6sOIlKybBUtn88/D1hhtiWRTXdZX3qheHvubrF76AkAJ0VolIidGTX0++TrR5qqjEkrsSAa4nNVmr47NZjDYRxW/twCK71eRm+cYwYDnnAXVf4pmjANebCrQ+zEvu/dPil0XVCUPHXY2I2O/mjmpDJkz16f6dlbY1jo/Vhh69IMOJ0KsWBQwsv6oMHZNKYHmNiQ== user@redos.localdomain
             EOT
         }
       + name                      = "demo-vm"
@@ -545,7 +545,7 @@ Terraform will perform the following actions:
       - labels                    = {} -> null
       - metadata                  = {
           - "ssh-keys" = <<-EOT
-                user:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDOhoQz97bl8n/F/QyM1OiqgrdA4ClCRVKBAZGDHtAF31UlrM+OQ6d33yhlDUMfMyzubeXGt0yeiRaPYEDPe41Pa3EkDd8S2tRtgMfu2iSO6QeYiwQRhPmbJQNLDfLD0GI0UOVw76KjxxA6iTNon5wvgeZfEzcNHP/OluYrtdPYuYmSrSMSO9xaXyWvkZgwDsNQPJYf2PhxPgCkVwNyBA64NVEKsUqpC6RWpxC2GTknq8cgBp5/lJr+Z7b6bTnP39tUSd4ansaXGJ960B+lS/AuZA7TpGFaq1NWycPBBt24DAGvWMWcTfEuByT+uXLHYd7J018lfSL2HL9TE3wEmnFEnkpTxqU9Jih4ToYcE6533fy2+TjIsGwszUb/x4TVRgrUFmtjRyYYc3rKFQrh9dncQBm6cAbB35bTtBysnYAspDQdGtcD4ULOBn30bWPxV1wj8lXjTxrG3K3qEK5TVPB01ITdnp9Kd7gaouMg44t6sOIlKybBUtn88/D1hhtiWRTXdZX3qheHvubrF76AkAJ0VolIidGTX0++TrR5qqjEkrsSAa4nNVmr47NZjDYRxW/twCK71eRm+cYwYDnnAXVf4pmjANebCrQ+zEvu/dPil0XVCUPHXY2I2O/mjmpDJkz16f6dlbY1jo/Vhh69IMOJ0KsWBQwsv6oMHZNKYHmNiQ== user@redos.localdomain
+                debian:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDOhoQz97bl8n/F/QyM1OiqgrdA4ClCRVKBAZGDHtAF31UlrM+OQ6d33yhlDUMfMyzubeXGt0yeiRaPYEDPe41Pa3EkDd8S2tRtgMfu2iSO6QeYiwQRhPmbJQNLDfLD0GI0UOVw76KjxxA6iTNon5wvgeZfEzcNHP/OluYrtdPYuYmSrSMSO9xaXyWvkZgwDsNQPJYf2PhxPgCkVwNyBA64NVEKsUqpC6RWpxC2GTknq8cgBp5/lJr+Z7b6bTnP39tUSd4ansaXGJ960B+lS/AuZA7TpGFaq1NWycPBBt24DAGvWMWcTfEuByT+uXLHYd7J018lfSL2HL9TE3wEmnFEnkpTxqU9Jih4ToYcE6533fy2+TjIsGwszUb/x4TVRgrUFmtjRyYYc3rKFQrh9dncQBm6cAbB35bTtBysnYAspDQdGtcD4ULOBn30bWPxV1wj8lXjTxrG3K3qEK5TVPB01ITdnp9Kd7gaouMg44t6sOIlKybBUtn88/D1hhtiWRTXdZX3qheHvubrF76AkAJ0VolIidGTX0++TrR5qqjEkrsSAa4nNVmr47NZjDYRxW/twCK71eRm+cYwYDnnAXVf4pmjANebCrQ+zEvu/dPil0XVCUPHXY2I2O/mjmpDJkz16f6dlbY1jo/Vhh69IMOJ0KsWBQwsv6oMHZNKYHmNiQ== user@redos.localdomain
             EOT
         } -> null
       - name                      = "demo-vm" -> null
@@ -675,7 +675,7 @@ Destroy complete! Resources: 3 destroyed.
   }
 
   provisioner "local-exec" {
-    command = "ansible-playbook -u user -i '${yandex_compute_instance.instance.network_interface.0.nat_ip_address},' --private-key ${local.ssh_private_key} provision.yml"
+    command = "ansible-playbook -u '${local.user}' --private-key ${local.ssh_private_key} --become -i '${yandex_compute_instance.instance.network_interface.0.nat_ip_address},' provision.yml"
   }
 ```
 Создадим playbook файл provision.yml:
@@ -899,7 +899,7 @@ yandex_compute_instance.instance (remote-exec):   Target Platform: unix
 yandex_compute_instance.instance (remote-exec): Connected!
 yandex_compute_instance.instance (remote-exec): Wait until SSH is ready
 yandex_compute_instance.instance: Provisioning with 'local-exec'...
-yandex_compute_instance.instance (local-exec): Executing: ["/bin/sh" "-c" "ansible-playbook -u user -i '84.201.179.210,' --private-key ~/.ssh/otus provision.yml"]
+yandex_compute_instance.instance (local-exec): Executing: ["/bin/sh" "-c" "ansible-playbook -u debian --private-key ~/.ssh/id_rsa --become -i '84.201.179.210,' provision.yml"]
 
 yandex_compute_instance.instance (local-exec): PLAY [Install Nginx] ***********************************************************
 
@@ -988,6 +988,8 @@ cd ./lab-01/ && \
 terraform init && \
 terraform apply -auto-approve
 ```
+
+### Удаление стенда
 
 Удалить развернутый стенд командой:
 ```
