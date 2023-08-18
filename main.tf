@@ -1,7 +1,5 @@
 locals {
   user            = "debian"
-#  ssh_public_key  = "~/.ssh/otus.pub"
-# ssh_key  = "user:${file("~/.ssh/id_rsa.pub")}"
   ssh_public_key  = "~/.ssh/otus.pub"
   ssh_private_key = "~/.ssh/otus"
 }

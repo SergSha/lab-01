@@ -4,9 +4,11 @@
   ansible.builtin.service:
     name: chrony
     state: restarted
+    daemon_reload: yes
 
 # systemctl restart chronyd
-- name: Restart Chrony RedHat
+- name: Restart Chronyd RedHat
   ansible.builtin.service:
     name: chronyd
     state: restarted
+    daemon_reload: yes

@@ -16,7 +16,6 @@
       name: chrony
       state: started
       enabled: yes
-      daemon_reload: yes
 
   # timedatectl set-timezone Europe/Moscow
   - name: Set timezone to Europe/Moscow
@@ -37,17 +36,16 @@
       state: present
 
   # systemctl enable chronyd --now
-  - name: Start Chrony Service
+  - name: Start Chronyd Service
     ansible.builtin.systemd:
       name: chronyd
       state: started
       enabled: yes
-      daemon_reload: yes
 
   # timedatectl set-timezone Europe/Moscow
   - name: Set timezone to Europe/Moscow
     community.general.timezone:
       name: Europe/Moscow
-    notify: Restart Chrony RedHat
+    notify: Restart Chronyd RedHat
 
   when: ansible_os_family == "RedHat"
