@@ -754,7 +754,7 @@ output "external_ip_address_demo_vm" {
 
 Теперь можем запустить команду terraform apply:
 ```
-echo yes | terraform apply
+terraform apply -auto-approve
 ```
 ```
 Terraform used the selected providers to generate the following execution plan.
@@ -867,12 +867,6 @@ Plan: 3 to add, 0 to change, 0 to destroy.
 
 Changes to Outputs:
   + external_ip_address_demo_vm = (known after apply)
-
-Do you want to perform these actions?
-  Terraform will perform the actions described above.
-  Only 'yes' will be accepted to approve.
-
-  Enter a value: 
 yandex_vpc_network.vpc: Creating...
 yandex_vpc_network.vpc: Creation complete after 1s [id=enpm935p2erkibptc7l1]
 yandex_vpc_subnet.subnet: Creating...
@@ -992,10 +986,10 @@ external_ip_address_demo_vm = "84.201.179.210"
 git clone https://github.com/SergSha/lab-01.git && \
 cd ./lab-01/ && \
 terraform init && \
-echo yes | terraform apply
+terraform apply -auto-approve
 ```
 
 Удалить развернутый стенд командой:
 ```
-echo yes | terraform destroy
+terraform destroy -auto-approve
 ```
