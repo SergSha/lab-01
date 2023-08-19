@@ -60,6 +60,6 @@ resource "yandex_compute_instance" "instance" {
   }
 
   provisioner "local-exec" {
-    command = "ansible-playbook -u '${local.user}' --private-key ${local.ssh_private_key} --become -i '${yandex_compute_instance.instance.network_interface.0.nat_ip_address},' provision.yml"
+    command = "ansible-playbook -u '${local.user}' --private-key '${local.ssh_private_key}' --become -i '${yandex_compute_instance.instance.network_interface.0.nat_ip_address},' provision.yml"
   }
 }
